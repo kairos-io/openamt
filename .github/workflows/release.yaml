@@ -1,0 +1,21 @@
+name: Release
+on:
+  push:
+    tags:
+      - v*
+env:
+  FORCE_COLOR: 1
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: earthly/actions-setup@v1
+        with:
+          version: v0.7.*
+      - name: docker login
+        run: docker login --username $FOO --password $FOO
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: lint
+        run: earthly --ci --push +image
