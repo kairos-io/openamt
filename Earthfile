@@ -3,7 +3,7 @@ VERSION 0.7
 ARG --global GOLANG_VERSION=1.19.7
 ARG --global AMTRPC_VERSION=v2.6.0
 ARG --global GOLINT_VERSION=v1.51.2
-ARG --global IMAGE_REPOSITORY=quay.io/kairos-io/provider-amt
+ARG --global IMAGE_REPOSITORY=ghcr.io/kairos-io/provider-amt
 
 builder:
     FROM golang:$GOLANG_VERSION
