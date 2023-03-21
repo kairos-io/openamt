@@ -13,7 +13,7 @@ jobs:
         with:
           version: v0.7.*
       - name: docker login
-        run: docker login --username $FOO --password $FOO
+        run: echo ${{ secrets.QUAY_PASSWORD }} | docker login -u ${{ secrets.QUAY_USERNAME }} --password-stdin quay.io
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
