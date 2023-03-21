@@ -23,7 +23,7 @@ version:
 
     COPY .git .git
 
-    RUN --no-cache echo $(git describe --always --tags --dirty) > VERSION
+    RUN --no-cache echo $(git describe --always --tags) > VERSION
 
     ARG VERSION=$(cat VERSION)
     SAVE ARTIFACT VERSION VERSION
