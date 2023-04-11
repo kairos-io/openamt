@@ -49,9 +49,9 @@ build:
     COPY +amt-rpc-lib/librpc.so  /usr/local/lib/librpc.so
     COPY +amt-rpc-lib/librpc.h  /usr/local/include/librpc.h
 
-    RUN go build -o provider-amt cmd/main.go && upx provider-amt
+    RUN go build -o agent-provider-amt cmd/main.go && upx agent-provider-amt
 
-    SAVE ARTIFACT provider-amt AS LOCAL artifacts/provider-amt
+    SAVE ARTIFACT agent-provider-amt AS LOCAL artifacts/agent-provider-amt
 
 image:
     FROM +version
@@ -60,9 +60,9 @@ image:
 
     FROM scratch
 
-    COPY +amt-rpc-lib/librpc.so  /usr/local/lib/librpc.so
-    COPY +amt-rpc-lib/librpc.h  /usr/local/include/librpc.h
-    COPY +build/provider-amt /system/providers/provider-amt
+    COPY --chmod 0777 +amt-rpc-lib/librpc.so  /usr/local/lib/librpc.so
+    COPY --chmod 0777 +amt-rpc-lib/librpc.h  /usr/local/include/librpc.h
+    COPY --chmod 0777 +build/agent-provider-amt /system/providers/agent-provider-amt
 
     SAVE IMAGE --push $IMAGE_REPOSITORY:$VERSION
 
