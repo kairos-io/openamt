@@ -3,8 +3,7 @@
 package amtrpc
 
 /*
-#cgo CFLAGS: -I./src
-#cgo LDFLAGS: -L./lib -lrpc -Wl,-rpath=./lib
+#cgo LDFLAGS: -L/usr/local/lib -lrpc -Wl,-rpath=/usr/local/lib
 #include <stdlib.h>
 #include "librpc.h"
 */
