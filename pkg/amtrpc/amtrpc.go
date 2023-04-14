@@ -3,7 +3,7 @@
 package amtrpc
 
 /*
-#cgo LDFLAGS: -L/usr/local/lib -lrpc -Wl,-rpath=/usr/local/lib
+#cgo LDFLAGS: -L'$ORIGIN' -lrpc -Wl,-rpath='$ORIGIN'
 #include <stdlib.h>
 #include "librpc.h"
 */

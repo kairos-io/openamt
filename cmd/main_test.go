@@ -1,9 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"github.com/kairos-io/kairos-sdk/bus"
-	"github.com/mudler/go-pluggable"
 	"github.com/stretchr/testify/assert"
 	"provider-amt/pkg/amtrpc"
 	"rpc/pkg/utils"
@@ -31,93 +28,50 @@ var amtExecError = amtrpc.AMTRPC{
 }
 
 func Test_activateAMTUnavailable(t *testing.T) {
-	config := Configuration{
-		AMT: &AMT{
-			ServerAddress: "wss://fake",
-		},
+	config := &AMT{
+		ServerAddress: "wss://fake",
 	}
-	event := encodeConfiguration(config)
 
-	resp := activateAMT(amtUnavailable, event)
+	err := activateAMT(amtUnavailable, config)
 
-	assert.Equal(t, StateUnavailable, resp.State)
-	assert.Equal(t, event.Data, resp.Data)
+	assert.NoError(t, err)
 }
 
 func Test_activateAMTCheckAccessError(t *testing.T) {
-	config := Configuration{
-		AMT: &AMT{
-			ServerAddress: "wss://fake",
-		},
+	config := &AMT{
+		ServerAddress: "wss://fake",
 	}
-	event := encodeConfiguration(config)
 
-	resp := activateAMT(amtAccessError, event)
+	err := activateAMT(amtAccessError, config)
 
-	assert.Equal(t, StateError, resp.State)
-	assert.Equal(t, event.Data, resp.Data)
+	assert.Error(t, err)
 }
 
 func Test_activateAMTNoConfiguration(t *testing.T) {
-	config := Configuration{}
-	event := encodeConfiguration(config)
+	err := activateAMT(amtActive, &AMT{})
 
-	resp := activateAMT(amtActive, event)
-
-	assert.Equal(t, StateSkipped, resp.State)
-	assert.Equal(t, event.Data, resp.Data)
-}
-
-func Test_activateAMTInvalidEventData(t *testing.T) {
-	config := Configuration{
-		AMT: &AMT{
-			ServerAddress: "wss://fake",
-		},
-	}
-	event := encodeConfiguration(config)
-	event.Data = event.Data[1:]
-
-	resp := activateAMT(amtActive, event)
-
-	assert.Equal(t, StateError, resp.State)
-	assert.Equal(t, event.Data, resp.Data)
-}
-
-func Test_activateAMTInvalidConfiguration(t *testing.T) {
-	event := &pluggable.Event{Data: `{"config":"{"}`}
-
-	resp := activateAMT(amtActive, event)
-
-	assert.Equal(t, StateError, resp.State)
-	assert.Equal(t, event.Data, resp.Data)
+	assert.NoError(t, err)
 }
 
 func Test_activateAMTApplyError(t *testing.T) {
-	config := Configuration{
-		AMT: &AMT{
-			ServerAddress: "wss://fake",
-		},
+	config := &AMT{
+		ServerAddress: "wss://fake",
 	}
-	event := encodeConfiguration(config)
 
-	resp := activateAMT(amtExecError, event)
+	err := activateAMT(amtExecError, config)
 
-	assert.Equal(t, StateError, resp.State)
-	assert.Equal(t, event.Data, resp.Data)
+	assert.Error(t, err)
 }
 
 func Test_activateAMTStandard(t *testing.T) {
 	var execCommand string
 
-	config := Configuration{
-		AMT: &AMT{
-			ServerAddress: "wss://fake",
-			Extra: map[string]string{
-				"-foo": "bar",
-			},
+	config := &AMT{
+		ServerAddress: "wss://fake",
+		Extra: map[string]string{
+			"-foo": "bar",
 		},
 	}
-	event := encodeConfiguration(config)
 	amt := amtrpc.AMTRPC{
 		MockAccessStatus: func() int { return utils.Success },
 		MockExec: func(s string) (string, int) {
@@ -126,24 +80,10 @@ func Test_activateAMTStandard(t *testing.T) {
 		},
 	}
 
-	resp := activateAMT(amt, event)
+	err := activateAMT(amt, config)
 
 	assert.Contains(t, execCommand, "activate")
-	assert.Contains(t, execCommand, "-u "+config.AMT.ServerAddress)
+	assert.Contains(t, execCommand, "-u "+config.ServerAddress)
 	assert.Contains(t, execCommand, "-foo bar")
-	assert.Equal(t, StateActive, resp.State)
-	assert.Equal(t, event.Data, resp.Data)
-	assert.False(t, resp.Errored())
-}
-
-func encodeConfiguration(config Configuration) *pluggable.Event {
-	inner, _ := json.Marshal(config)
-	data, _ := json.Marshal(bus.EventPayload{
-		Config: string(inner),
-	})
-
-	return &pluggable.Event{
-		Name: bus.EventInstall,
-		Data: string(data),
-	}
+	assert.NoError(t, err)
 }
