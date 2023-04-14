@@ -49,9 +49,10 @@ build:
     COPY +amt-rpc-lib/librpc.so  /usr/local/lib/librpc.so
     COPY +amt-rpc-lib/librpc.h  /usr/local/include/librpc.h
 
-    RUN go build -ldflags "-linkmode 'external'" -o agent-provider-amt cmd/main.go && upx agent-provider-amt
+    RUN go build -o agent-provider-amt cmd/main.go && upx agent-provider-amt
 
     SAVE ARTIFACT agent-provider-amt AS LOCAL artifacts/agent-provider-amt
+    SAVE ARTIFACT /usr/local/lib/librpc.so AS LOCAL artifacts/librpc.so
 
 image:
     FROM +version
@@ -60,9 +61,8 @@ image:
 
     FROM scratch
 
-    COPY --chmod 0777 +amt-rpc-lib/librpc.so  /usr/local/lib/librpc.so
-    COPY --chmod 0777 +amt-rpc-lib/librpc.h  /usr/local/include/librpc.h
-    COPY --chmod 0777 +build/agent-provider-amt /system/providers/agent-provider-amt
+    COPY --chmod 0777 +amt-rpc-lib/librpc.so  librpc.so
+    COPY --chmod 0777 +build/agent-provider-amt agent-provider-amt
 
     SAVE IMAGE --push $IMAGE_REPOSITORY:$VERSION
 
