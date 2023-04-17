@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/stretchr/testify/assert"
-	"provider-amt/pkg/amtrpc"
+	"openamt/pkg/amtrpc"
 	"rpc/pkg/utils"
 	"testing"
 )
