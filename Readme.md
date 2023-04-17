@@ -1,7 +1,7 @@
-Provider AMT
+Open AMT
 ---
 
-Provider AMT adds support for configuring Intel Active Management Tools during Kairos installation.
+Open AMT adds support for configuring Intel Active Management Tools during Kairos installation.
 
 ```yaml
 #cloud-config
